@@ -1699,13 +1699,13 @@ _Available only within the handler method and only before one of `reply()`, `rep
 Transmits a file from the file system. The 'Content-Type' header defaults to the matching mime type based on filename extension.:
 
 - `path` - the file path.
-- `options` - optional settings:
-    - `filePath` - a relative or absolute file path string (relative paths are resolved based on the server [`files`](#server.config.files) configuration).
-    - `options` - optional configuration:
-        - `filename` - optional filename to send if the 'Content-Disposition' header is sent. Defaults to basename of `path`.
-        - `mode` - value of the HTTP 'Content-Disposition' header. Allowed values:
+    - `options` - optional settings:
+        - `filename` - an optional filename to specify if sending a 'Content-Disposition' header, defaults to the basename of `path`
+        - `mode` - specifies whether to include the 'Content-Disposition' header with the response. Available values:
+            - `false` - header is not included. This is the default value.
             - `'attachment'`
             - `'inline'`
+        - `lookupCompressed` - if `true`, looks for the same filename with the '.gz' suffix for a precompressed version of the file to serve if the request supports content encoding. Defaults to `false`.
 
 No return value.
 
