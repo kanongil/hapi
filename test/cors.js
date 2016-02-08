@@ -55,6 +55,7 @@ describe('CORS', () => {
         server.inject({ method: 'OPTIONS', url: '/', headers: { origin: 'http://example.com/', 'access-control-request-method': 'GET' } }, (res) => {
 
             expect(res.headers['access-control-allow-origin']).to.equal('http://example.com/');
+            expect(res.headers.vary).to.equal('origin');
             done();
         });
     });
@@ -73,6 +74,7 @@ describe('CORS', () => {
         server.inject({ method: 'OPTIONS', url: '/x', headers: { origin: 'http://example.com/', 'access-control-request-method': 'GET' } }, (res) => {
 
             expect(res.headers['access-control-allow-origin']).to.equal('http://example.com/');
+            expect(res.headers.vary).to.equal('origin');
             done();
         });
     });
@@ -94,12 +96,14 @@ describe('CORS', () => {
             expect(res1.statusCode).to.equal(200);
             expect(res1.result).to.be.null();
             expect(res1.headers['access-control-allow-origin']).to.equal('http://example.com/');
+            expect(res1.headers.vary).to.equal('origin');
 
             server.inject({ method: 'OPTIONS', url: '/b', headers: { origin: 'http://example.com/', 'access-control-request-method': 'GET' } }, (res2) => {
 
                 expect(res2.statusCode).to.equal(200);
                 expect(res2.result.message).to.equal('CORS is disabled for this route');
                 expect(res2.headers['access-control-allow-origin']).to.not.exist();
+                expect(res2.headers.vary).to.not.exist();
                 done();
             });
         });
@@ -158,6 +162,7 @@ describe('CORS', () => {
             expect(res.statusCode).to.equal(200);
             expect(res.result).to.be.null();
             expect(res.headers['access-control-allow-origin']).to.equal('http://example.com/');
+            expect(res.headers.vary).to.equal('origin');
             done();
         });
     });
