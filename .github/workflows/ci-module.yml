@@ -5,11 +5,26 @@ on:
     branches:
       - v21
       - master
+      - macos-test
   pull_request:
   workflow_dispatch:
 
 jobs:
   test:
-    uses: hapijs/.github/.github/workflows/ci-module.yml@master
-    with:
-      min-node-version: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos]
+        node: [14, 16, 18, 20]
+
+    runs-on: macos-14
+    name: ${{ matrix.os }} node@${{ matrix.node }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+      - name: install
+        run: npm install
+      - name: test
+        run: npm test
