@@ -14,14 +14,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [11, 12, 13]
+        os: [11, 12, 13, 14]
         node: [14, 20]
 
     runs-on: macos-${{ matrix.os }}
     name: macos-${{ matrix.os }} node@${{ matrix.node }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: install
