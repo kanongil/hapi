@@ -14,11 +14,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos]
-        node: [14, 16, 18, 20]
+        os: [11, 12, 13]
+        node: [14, 20]
 
-    runs-on: macos-13
-    name: ${{ matrix.os }} node@${{ matrix.node }}
+    runs-on: macos-${{ matrix.os }}
+    name: macos-${{ matrix.os }} node@${{ matrix.node }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
