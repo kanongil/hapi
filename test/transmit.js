@@ -817,8 +817,9 @@ describe('transmission', () => {
             await server.start();
 
             const uri = 'http://localhost:' + server.info.port;
+            const zipped = await internals.compress('gzip', Buffer.from(data));
             const { payload } = await Wreck.post(uri, { headers: { 'accept-encoding': '*' }, payload: data });
-            expect(payload.toString()).to.equal(data);
+            expect(payload.toString()).to.equal(zipped.toString());
             await server.stop();
         });
 
@@ -830,8 +831,9 @@ describe('transmission', () => {
             await server.start();
 
             const uri = 'http://localhost:' + server.info.port;
+            const zipped = await internals.compress('gzip', Buffer.from(data));
             const { payload } = await Wreck.get(uri, { headers: { 'accept-encoding': '*' } });
-            expect(payload.toString()).to.equal(data);
+            expect(payload.toString()).to.equal(zipped.toString());
             await server.stop();
         });
 
