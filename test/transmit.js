@@ -749,6 +749,34 @@ describe('transmission', () => {
             expect(res.headers['content-length']).to.not.exist();
         });
 
+        it('returns a plain response when accept-encoding is not present', async () => {
+
+            const data = '{"test":"true"}';
+
+            const server = Hapi.server({ compression: { minBytes: 1 } });
+            server.route({ method: 'GET', path: '/', handler: () => data });
+            await server.start();
+
+            const uri = 'http://localhost:' + server.info.port;
+            const { payload } = await Wreck.get(uri);
+            expect(payload.toString()).to.equal(data);
+            await server.stop();
+        });
+
+        it('returns a plain response request when accept-encoding: "" is requested', async () => {
+
+            const data = '{"test":"true"}';
+
+            const server = Hapi.server({ compression: { minBytes: 1 } });
+            server.route({ method: 'GET', path: '/', handler: () => data });
+            await server.start();
+
+            const uri = 'http://localhost:' + server.info.port;
+            const { payload } = await Wreck.get(uri, { headers: { 'accept-encoding': '' } });
+            expect(payload.toString()).to.equal(data);
+            await server.stop();
+        });
+
         it('returns a gzip response on a post request when accept-encoding: gzip is requested', async () => {
 
             const data = '{"test":"true"}';
