@@ -9,7 +9,11 @@ import { CacheProvider, ServerOptionsCache } from './cache';
 import { SameSitePolicy, ServerStateCookieOptions } from './state';
 
 export interface ServerOptionsCompression {
-    minBytes: number;
+    minBytes?: number;
+    engines?: {
+        gzip?: true | false | 'encode' | 'decode';
+        deflate?: true | false | 'encode' | 'decode';
+    }
 }
 
 /**

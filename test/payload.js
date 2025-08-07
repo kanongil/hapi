@@ -995,4 +995,77 @@ describe('Payload', () => {
         const res = await server.inject({ method: 'POST', url: '/echo', payload: multipartPayload, simulate: { split: true }, headers: { 'content-length': null, 'content-type': 'multipart/form-data; boundary=AaB03x' } });
         expect(res.statusCode).to.equal(415);
     });
+
+    it('applies decompression for encoder with engine option "decode"', async () => {
+
+        const message = { 'msg': 'This message is going to be gzipped.' };
+        const server = Hapi.server({ compression: { engines: { gzip: 'decode' } } });
+
+        server.route({ method: 'POST', path: '/', handler: (request) => request.payload });
+
+        const compressed = await new Promise((resolve) => Zlib.gzip(JSON.stringify(message), (ignore, result) => resolve(result)));
+
+        const request = {
+            method: 'POST',
+            url: '/',
+            headers: {
+                'content-type': 'application/json',
+                'content-encoding': 'gzip',
+                'content-length': compressed.length
+            },
+            payload: compressed
+        };
+
+        const res = await server.inject(request);
+        expect(res.statusCode).to.equal(200);
+        expect(res.result).to.exist().and.to.equal(message);
+    });
+
+    it('does not apply decompression for encoder with engine option false', async () => {
+
+        const message = { 'msg': 'This message is going to be gzipped.' };
+        const server = Hapi.server({ compression: { engines: { gzip: false } } });
+
+        server.route({ method: 'POST', path: '/', handler: (request) => request.payload });
+
+        const compressed = await new Promise((resolve) => Zlib.gzip(JSON.stringify(message), (_, result) => resolve(result)));
+
+        const request = {
+            method: 'POST',
+            url: '/',
+            headers: {
+                'content-type': 'application/json',
+                'content-encoding': 'gzip',
+                'content-length': compressed.length
+            },
+            payload: compressed
+        };
+
+        const res = await server.inject(request);
+        expect(res.statusCode).to.be.range(400, 499);          // Currently responds with code 400, but 415 is more appropriate
+    });
+
+    it('does not apply decompression for encoder with engine option "encode"', async () => {
+
+        const message = { 'msg': 'This message is going to be gzipped.' };
+        const server = Hapi.server({ compression: { engines: { gzip: 'encode' } } });
+
+        server.route({ method: 'POST', path: '/', handler: (request) => request.payload });
+
+        const compressed = await new Promise((resolve) => Zlib.gzip(JSON.stringify(message), (_, result) => resolve(result)));
+
+        const request = {
+            method: 'POST',
+            url: '/',
+            headers: {
+                'content-type': 'application/json',
+                'content-encoding': 'gzip',
+                'content-length': compressed.length
+            },
+            payload: compressed
+        };
+
+        const res = await server.inject(request);
+        expect(res.statusCode).to.be.range(400, 499);          // Currently responds with code 400, but 415 is more appropriate
+    });
 });

@@ -1858,6 +1858,39 @@ describe('transmission', () => {
             const uncompressed = await internals.uncompress('unzip', res.rawPayload);
             expect(uncompressed.toString()).to.equal('some payload and some other payload');
         });
+
+        it('applies compression for encoder with engine option "encode"', async () => {
+
+            const data = '{"test":"true"}';
+
+            const server = Hapi.server({ compression: { minBytes: 1, engines: { gzip: 'encode' } } });
+            server.route({ method: 'GET', path: '/', handler: () => data });
+
+            const res = await server.inject({ url: '/', headers: { 'accept-encoding': 'gzip' } });
+            expect(res.headers['content-encoding']).to.equal('gzip');
+        });
+
+        it('does not use a disabled encoder with engine option false', async () => {
+
+            const data = '{"test":"true"}';
+
+            const server = Hapi.server({ compression: { minBytes: 1, engines: { gzip: 'decode' } } });
+            server.route({ method: 'GET', path: '/', handler: () => data });
+
+            const res = await server.inject({ url: '/', headers: { 'accept-encoding': 'gzip' } });
+            expect(res.headers['content-encoding']).to.not.exist();
+        });
+
+        it('does not use a disabled encoder with engine option "decode"', async () => {
+
+            const data = '{"test":"true"}';
+
+            const server = Hapi.server({ compression: { minBytes: 1, engines: { gzip: 'decode' } } });
+            server.route({ method: 'GET', path: '/', handler: () => data });
+
+            const res = await server.inject({ url: '/', headers: { 'accept-encoding': 'gzip' } });
+            expect(res.headers['content-encoding']).to.not.exist();
+        });
     });
 
     describe('writeHead()', () => {

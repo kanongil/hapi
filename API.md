@@ -98,17 +98,34 @@ assigned one or more (array):
 
 #### <a name="server.options.compression" /> `server.options.compression`
 
-Default value: `{ minBytes: 1024 }`.
+Default value: `{ minBytes: 1024, engines: { gzip: true, deflate: true } }`.
 
 Defines server handling of content encoding requests. If `false`, response content encoding is
 disabled and no compression is performed by the server.
 
 ##### <a name="server.options.compression.minBytes" /> `server.options.compression.minBytes`
 
-Default value: '1024'.
+Default value: `1024`.
 
 Sets the minimum response payload size in bytes that is required for content encoding compression.
 If the payload size is under the limit, no compression is performed.
+
+##### <a name="server.options.compression.engines" /> `server.options.compression.engines`
+
+Default value: `{ gzip: true, deflate: true }`.
+
+Configures the availability of the built-in compression engines. Each engine, represented by the
+object key name, can have one of the following values:
+
+- `true` - enable both encoder and decoder.
+- `false` - disable both encoder and decoder.
+- `encode` - only enable encoder.
+- `decode` - only enable decoder.
+
+The built-in engines are: `['gzip', 'deflate']`.
+
+Disabling an engine allows custom compression algorithms to be applied using
+[`server.encoder()`](#server.encoder()) and [`server.decoder()`](#server.decoder()).
 
 #### <a name="server.options.debug" /> `server.options.debug`
 
@@ -1290,8 +1307,8 @@ are called, where:
 
 ### <a name="server.decoder()" /> `server.decoder(encoding, decoder)`
 
-Registers a custom content decoding compressor to extend the built-in support for `'gzip'` and
-'`deflate`' where:
+Registers a custom content encoding compressor engine to extend the built-in support, as specified
+by the [`compression.engines` option](#server.options.compression.engines):
 
 - `encoding` - the decoder name string.
 
@@ -1487,8 +1504,8 @@ The `dependencies` configuration accepts one of:
 
 ### <a name="server.encoder()" /> `server.encoder(encoding, encoder)`
 
-Registers a custom content encoding compressor to extend the built-in support for `'gzip'` and
-'`deflate`' where:
+Registers a custom content encoding compressor engine to extend the built-in support, as specified
+by the [`compression.engines`](#server.options.compression.engines) option:
 
 - `encoding` - the encoder name string.
 
